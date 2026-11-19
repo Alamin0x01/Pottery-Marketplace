@@ -1,0 +1,17 @@
+node_modules/
+.env
+.env.local
+.env.production
+.env.*
+!.env.example
+*.log
+serviceAccount*.json
+*serviceaccount*.json
+*-firebase-adminsdk-*.json
+service-account*.json
+*credentials*.json
+*.pem
+*.key
+.firebaserc
+.firebase/
+*-debug.log*

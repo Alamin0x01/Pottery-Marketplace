@@ -1,0 +1,54 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-terracotta-50: #fbf3ef;
+  --color-terracotta-100: #f5e0d5;
+  --color-terracotta-200: #ecc4b0;
+  --color-terracotta-500: #c2623d;
+  --color-terracotta-600: #a8502f;
+  --color-terracotta-700: #8a4026;
+  --color-cream: #fdf8f0;
+  --color-beige: #efe4d3;
+  --color-sand: #e4d5bd;
+  --color-clay-brown: #4a3426;
+  --color-clay-soft: #7a665a;
+  --color-moss: #5f7d4e;
+  --font-sans: ui-sans-serif, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+  --animate-fade-up: fade-up 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-fade-in: fade-in 0.4s ease-out both;
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+
+body {
+  @apply bg-cream font-sans text-clay-brown antialiased;
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+::selection {
+  background: var(--color-terracotta-100);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-terracotta-500);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

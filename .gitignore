@@ -1,0 +1,37 @@
+# Dependencies and build output
+node_modules/
+dist/
+
+# Environment files: only *.env.example is committed
+.env
+.env.local
+.env.production
+.env.*
+!.env.example
+
+# Firebase / Google Cloud credentials and private keys - NEVER commit
+serviceAccount*.json
+*serviceaccount*.json
+*-firebase-adminsdk-*.json
+firebase-adminsdk*.json
+service-account*.json
+*credentials*.json
+*.pem
+*.key
+*.p12
+*.pfx
+google-services.json
+GoogleService-Info.plist
+
+# Firebase CLI / emulator state (the project id in .firebaserc is per-developer; use .firebaserc.example)
+.firebaserc
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+pubsub-debug.log*
+emulator-data/
+
+# Logs and local tooling
+*.log
+.tools/

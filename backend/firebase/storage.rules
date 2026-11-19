@@ -1,0 +1,17 @@
+rules_version = '2';
+
+// Only web-optimised copies of APPROVED products are public, and only for reading. They are copied to
+// public/products/ by the backend on approval and deleted on rejection/removal. Original device photos
+// (uploads/{potterId}/{productId}/original.jpg) and everything else are inaccessible to clients.
+// All writes happen through the backend (Admin SDK bypasses these rules).
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /public/products/{productId}/{file} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

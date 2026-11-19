@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.env.local
+.env.production
+.env.*
+!.env.example
+*serviceaccount*.json
+*-firebase-adminsdk-*.json
+*.pem
+*.key

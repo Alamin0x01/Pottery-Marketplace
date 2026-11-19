@@ -1,0 +1,38 @@
+{
+  "name": "pottery-marketplace-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.6"
+  },
+  "scripts": {
+    "dev": "node --watch --env-file-if-exists=.env src/server.js",
+    "start": "node --env-file-if-exists=.env src/server.js",
+    "test": "node --test \"tests/*.test.js\" \"tests/unit/**/*.test.js\"",
+    "test:emulator": "node scripts/emulators.js exec \"node --test --test-concurrency=1 tests/emulator/*.test.js\"",
+    "emulators": "node scripts/emulators.js start",
+    "check:firebase": "node --env-file-if-exists=.env scripts/check-firebase.js",
+    "admin": "node --env-file-if-exists=.env scripts/manage-admin.js",
+    "seed:demo": "node --env-file-if-exists=.env scripts/seed-demo.js",
+    "seed:images": "node --env-file-if-exists=.env scripts/seed-images.js",
+    "backfill:potters": "node --env-file-if-exists=.env scripts/backfill-potters.js",
+    "indexes:generate": "node scripts/generate-indexes.js",
+    "firebase:deploy:rules": "firebase deploy --config firebase/firebase.json --only firestore:rules,firestore:indexes,storage"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.3.0",
+    "express-rate-limit": "^8.7.5",
+    "firebase-admin": "^14.5.1",
+    "helmet": "^8.3.0",
+    "pino": "^10.4.0",
+    "pino-http": "^11.0.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^6.0.0",
+    "firebase": "^13.4.0",
+    "firebase-tools": "^15.37.0"
+  }
+}
