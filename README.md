@@ -67,3 +67,4 @@ cd admin;   npm test; npm run build  # 7 tests
 * *`VITE_API_URL is not set`*: create `.env.local` from `.env.example`, restart `npm run dev`.
 * *Port already in use*: the Vite ports are fixed (`strictPort`) so CORS settings stay predictable; stop the process using the port.
 * *Backend exits with "Invalid environment configuration"*: the message names the offending variable.
+# Pottery-Marketplace
