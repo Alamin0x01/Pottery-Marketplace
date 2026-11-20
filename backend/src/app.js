@@ -15,7 +15,7 @@ export function createApp({ env, logger, readiness, auth, repos, adminConfig = {
   const app = express();
 
   app.disable('x-powered-by');
-  // Behind Railway/VPS reverse proxy; must be set correctly or rate limits see the proxy IP.
+  // Behind the Vercel/VPS reverse proxy; must be set correctly or rate limits see the proxy IP.
   app.set('trust proxy', env.TRUST_PROXY_HOPS);
 
   app.use(

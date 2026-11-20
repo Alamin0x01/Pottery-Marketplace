@@ -1,15 +1,14 @@
 import { loadEnv } from './config/env.js';
 import { createLogger } from './config/logger.js';
-import { createFirebase, checkFirebase, createReadinessProbe, FirebaseConfigError } from './config/firebase.js';
-import { createApp } from './app.js';
-import { createRepositories } from './repositories/index.js';
+import { checkFirebase, FirebaseConfigError } from './config/firebase.js';
+import { createRuntime } from './bootstrap.js';
 
 const env = loadEnv();
 const logger = createLogger(env);
 
-let firebase;
+let runtime;
 try {
-  firebase = createFirebase(env);
+  runtime = createRuntime({ env, logger });
 } catch (err) {
   if (err instanceof FirebaseConfigError) {
     logger.fatal(`Firebase configuration error: ${err.message}. See docs/FIREBASE_SETUP.md`);
@@ -17,15 +16,7 @@ try {
   }
   throw err;
 }
-
-const app = createApp({
-  env,
-  logger,
-  readiness: createReadinessProbe(firebase),
-  auth: firebase.auth,
-  repos: createRepositories(firebase.db),
-});
-
+const { app, firebase } = runtime;
 const server = app.listen(env.PORT, () => {
   logger.info({ port: env.PORT, env: env.NODE_ENV, firebase: firebase.config }, 'backend listening');
   // Report connectivity at boot without blocking startup; /health/ready keeps reporting it.

@@ -61,12 +61,12 @@ The backend authenticates to Firebase with a **service-account key**. Treat it l
 2. **Never** put it in the repository, in `web/`, in chat, or in an issue. `.gitignore` blocks common names (`*-firebase-adminsdk-*.json`, `serviceAccount*.json`, `*credentials*.json`, `*.pem`, `*.key`), but do not rely on that: store it outside the project folder.
 3. Pick **one** way to give it to the backend:
    * **Local machine:** keep the file somewhere outside the repo and set `GOOGLE_APPLICATION_CREDENTIALS` to its absolute path in `backend/.env`.
-   * **Railway/VPS:** base64-encode the file and set the result as the secret `FIREBASE_SERVICE_ACCOUNT_B64`:
+   * **Vercel/VPS:** base64-encode the file and set the result as the secret `FIREBASE_SERVICE_ACCOUNT_B64` (see [DEPLOYMENT.md](DEPLOYMENT.md) for the command that pipes it into `vercel env add` without printing it):
      ```powershell
      [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\secure\key.json"))
      ```
-     Base64 is *encoding, not encryption*; only trusted people may view the Railway variables. Delete the local JSON file afterwards if you no longer need it.
-4. **Least privilege for production:** the default key can administer the whole Firebase project. For production create a dedicated service account (Google Cloud console → IAM → Service accounts) with only: *Cloud Datastore User*, *Storage Object Admin* (restricted to the app bucket), and *Firebase Authentication Admin*; generate its key instead. The backend verifies the key belongs to `FIREBASE_PROJECT_ID` and refuses to start otherwise.
+     Base64 is *encoding, not encryption*; only trusted people may view the Vercel variables. Delete the local JSON file afterwards if you no longer need it.
+4. **Least privilege for production:** the default key can administer the whole Firebase project. For production create a dedicated service account (Google Cloud console → IAM → Service accounts) with only: *Cloud Datastore User* and *Firebase Authentication Admin* (no Storage role: Cloud Storage is not used); generate its key instead. The backend verifies the key belongs to `FIREBASE_PROJECT_ID` and refuses to start otherwise.
 5. If a key ever leaks: Service accounts → *Manage service account permissions → Keys → delete the key*, create a new one, redeploy.
 
 ## 8. Local emulators (no project needed)
@@ -144,7 +144,7 @@ The check only **reads**; it writes nothing. Then start the API (`npm run dev`) 
 ## 13. Security checklist
 - [ ] Separate Firebase projects for development and production
 - [ ] Budget alert configured
-- [ ] Service-account key stored outside the repo / only in Railway secrets; never in `web/`
+- [ ] Service-account key stored outside the repo / only in Vercel secrets; never in `web/`
 - [ ] Production uses a least-privilege service account
 - [ ] Firestore and Storage rules deployed (deny-all / public read of `public/products/**` only)
 - [ ] Web API key restricted to your domains

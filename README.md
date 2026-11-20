@@ -44,7 +44,7 @@ The customer site shows **API: online** (backend reachable, CORS OK) and **Fireb
 Demo product images are static files in `web/public/images/products/` (paths like `/images/products/clay-vase.jpg` stored in Firestore `products.images[]`). No Cloud Storage, no Blaze plan, no paid image host. Run `cd backend; npm run seed:images` after seeding to assign them. These are for demo products only; future ESP32 image uploads will require a suitable cloud storage solution. Details: [docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md) §4.
 
 ### Deployment
-Railway (backend) + two Vercel projects (web, admin) on the Firebase Spark plan: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+Three Vercel projects (API as a serverless function, web, admin) on the Firebase Spark plan: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ### Judge demo accounts
 Fixed **DEMO** accounts (superadmin, admin, customer, plus a DEMO potter record), a "Demo login" panel and a confidential credentials sheet are described in [docs/DEMO_ACCOUNTS.md](docs/DEMO_ACCOUNTS.md). Passwords are never committed.

@@ -1,0 +1,9 @@
+.env
+.env.*
+!.env.example
+node_modules
+emulator-data
+firebase
+tests
+scripts
+*.log
