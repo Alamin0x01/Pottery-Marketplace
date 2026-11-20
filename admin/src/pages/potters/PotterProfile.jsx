@@ -10,6 +10,7 @@ import { ConfirmDialog } from '../../components/ui/ConfirmDialog.jsx';
 import { Button, BUTTON_BASE, BUTTON_VARIANTS } from '../../components/ui/Button.jsx';
 import { DetailList, PageHeader, TabPanel, Tabs } from '../../components/ui/Layout.jsx';
 import { StatCard } from '../../components/ui/StatCard.jsx';
+import { ProductThumb } from '../../components/ui/ProductThumb.jsx';
 import { DeviceStatusBadge, LastSeen } from '../../features/devices/DeviceBits.jsx';
 import { AssignToPotterDialog } from '../../features/devices/AssignDialogs.jsx';
 import { useAsync } from '../../hooks/useAsync.js';
@@ -45,7 +46,7 @@ function DevicesTab({ potter, devices, onAssign }) {
 function ProductsTab({ potterId }) {
   const list = usePagedList((params) => adminApi.products(params), { potterId, limit: 10 });
   const columns = [
-    { key: 'name', header: 'Product', render: (p) => <span className="font-medium">{p.name ?? 'Untitled draft'}</span> },
+    { key: 'name', header: 'Product', render: (p) => <span className="flex items-center gap-3"><ProductThumb product={p} /><span className="font-medium">{p.name ?? 'Untitled draft'}</span></span> },
     { key: 'status', header: 'Status', render: (p) => <StatusBadge value={p.status} meta={PRODUCT_STATUS_META} /> },
     { key: 'price', header: 'Price', hideBelow: 'sm', className: 'text-right', render: (p) => (p.price ? formatBdt(p.price) : '—') },
     { key: 'stock', header: 'Stock', hideBelow: 'md', className: 'text-right', render: (p) => (typeof p.stock === 'number' ? p.stock : '—') },

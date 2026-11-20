@@ -4,6 +4,7 @@ import { Container } from '../components/layout/Layout.jsx';
 import { Button } from '../components/ui/Button.jsx';
 import { TextField } from '../components/ui/Fields.jsx';
 import { Brand } from '../components/layout/Brand.jsx';
+import { DemoLogin } from '../components/auth/DemoLogin.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { fieldErrorsFromApi, MIN_PASSWORD, validateLogin, validateRegistration } from '../utils/validation.js';
 
@@ -59,6 +60,7 @@ export function LoginPage() {
         {error && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{error}</p>}
         <Button type="submit" size="lg" className="w-full" loading={busy}>Sign in</Button>
       </form>
+      <DemoLogin onSelect={(email) => { setForm({ email, password: '' }); setError(null); }} />
     </AuthShell>
   );
 }

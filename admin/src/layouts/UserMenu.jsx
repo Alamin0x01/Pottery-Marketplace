@@ -26,7 +26,10 @@ export function UserMenu() {
           <div className="border-b border-line px-4 py-3">
             <p className="truncate text-sm font-semibold text-charcoal">{display}</p>
             {admin.name && <p className="truncate text-xs text-charcoal-soft">{admin.email}</p>}
-            <div className="mt-2"><StatusBadge value={admin.role} meta={ROLE_META} /></div>
+            <div className="mt-2 flex items-center gap-2">
+              <StatusBadge value={admin.role} meta={ROLE_META} />
+              {admin.demo && <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-amber-800">Demo account</span>}
+            </div>
           </div>
           <Link to="/settings" onClick={close} className="flex items-center gap-2 px-4 py-2.5 text-sm text-charcoal transition-colors hover:bg-stone-50">
             <Icon name="settings" className="h-4 w-4" /> Settings

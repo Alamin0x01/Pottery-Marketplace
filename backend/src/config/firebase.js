@@ -43,7 +43,7 @@ function parseServiceAccount(raw, source) {
 export function resolveFirebaseConfig(env) {
   const { FIREBASE_PROJECT_ID: projectId, FIREBASE_STORAGE_BUCKET: storageBucket } = env;
   if (!projectId) throw new FirebaseConfigError('FIREBASE_PROJECT_ID is required');
-  if (!storageBucket) throw new FirebaseConfigError('FIREBASE_STORAGE_BUCKET is required');
+  // The bucket is optional: on the Spark plan Cloud Storage is not used (demo images are static files in the web app).
 
   const emulatorKeysSet = EMULATOR_KEYS.filter((k) => env[k]);
   if (emulatorKeysSet.length > 0) {
@@ -97,7 +97,7 @@ export function createFirebase(env, { appName = 'pottery-backend' } = {}) {
   const app = initializeApp(
     {
       projectId: config.projectId,
-      storageBucket: config.storageBucket,
+      ...(config.storageBucket ? { storageBucket: config.storageBucket } : {}),
       ...(config.serviceAccount ? { credential: cert(config.serviceAccount) } : {}),
     },
     appName,
@@ -107,7 +107,7 @@ export function createFirebase(env, { appName = 'pottery-backend' } = {}) {
     app,
     db: getFirestore(app),
     auth: getAuth(app),
-    bucket: getStorage(app).bucket(),
+    bucket: config.storageBucket ? getStorage(app).bucket() : null,
     // Never include the service account here: this object is safe to log.
     config: { projectId: config.projectId, storageBucket: config.storageBucket, useEmulators: config.useEmulators },
     close: () => deleteApp(app),
@@ -150,13 +150,13 @@ async function timed(fn, timeoutMs) {
   }
 }
 
-/** Read-only connectivity probe of Firestore, Storage and Auth. Never writes. */
+/** Read-only connectivity probe of Firestore, Auth and (only when a bucket is configured) Storage. Never writes. */
 export async function checkFirebase(fb, { timeoutMs = 8000 } = {}) {
   const [firestore, storage, auth] = await Promise.all([
     timed(() => fb.db.collection('counters').doc('__connectivity_probe').get(), timeoutMs),
     // Listing one object proves the bucket exists and the credentials may use it. (`bucket.exists()` is not
     // used: the Storage emulator only creates a bucket on first write, so it would report false there.)
-    timed(() => fb.bucket.getFiles({ maxResults: 1, autoPaginate: false }), timeoutMs),
+    fb.bucket ? timed(() => fb.bucket.getFiles({ maxResults: 1, autoPaginate: false }), timeoutMs) : { ok: true, skipped: true },
     timed(() => fb.auth.listUsers(1), timeoutMs),
   ]);
   return { ok: firestore.ok && storage.ok && auth.ok, checks: { firestore, storage, auth } };

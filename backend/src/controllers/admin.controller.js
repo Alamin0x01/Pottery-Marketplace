@@ -12,6 +12,7 @@ export function createAdminController({ repos, services }) {
         role: req.user.role,
         name: profile?.name ?? null,
         active: profile?.active ?? true,
+        demo: req.user.demo === true,
       });
     },
 

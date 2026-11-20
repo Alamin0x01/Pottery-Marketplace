@@ -24,9 +24,11 @@ const emulators = {
 const resolve = (extra) => resolveFirebaseConfig(loadEnv({ ...base, ...extra }));
 const rejects = (extra, pattern) => assert.throws(() => resolve(extra), (e) => e instanceof FirebaseConfigError && pattern.test(e.message));
 
-test('project id and bucket are required', () => {
+test('project id is required; the Storage bucket is optional (Spark plan)', () => {
   assert.throws(() => resolveFirebaseConfig(loadEnv({ NODE_ENV: 'test' })), /FIREBASE_PROJECT_ID is required/);
-  assert.throws(() => resolveFirebaseConfig(loadEnv({ NODE_ENV: 'test', FIREBASE_PROJECT_ID: 'demo-pottery' })), /FIREBASE_STORAGE_BUCKET is required/);
+  const cfg = resolveFirebaseConfig(loadEnv({ NODE_ENV: 'test', FIREBASE_PROJECT_ID: 'demo-pottery', ...emulators }));
+  assert.equal(cfg.useEmulators, true);
+  assert.ok(!cfg.storageBucket);
 });
 
 test('real mode needs credentials', () => {

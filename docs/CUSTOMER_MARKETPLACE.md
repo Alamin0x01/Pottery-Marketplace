@@ -32,10 +32,10 @@ There are no real product photos until devices upload them (Phase 6) and no admi
 cd backend
 node --env-file=.env scripts/seed-demo.js              # fresh emulators: potters, devices, products, orders
 node --env-file=.env scripts/seed-catalog.js 12        # optional: more approved products (pagination demo)
-npm run seed:images                                    # uploads generated SVG illustrations to Storage + marks 3 products/potters featured
+npm run seed:images                                    # assigns the static demo images (web/public/images/products) + marks 3 products/potters featured
 ```
 
-All three refuse to run against a real Firebase project. The illustrations are clearly generated placeholders (`scripts/lib/productArt.js`), served through the real `public/products/**` Storage path and public URLs, so the image pipeline is exercised for real. A product without any image shows a "Photo coming soon" placeholder.
+The first two refuse to run against a real Firebase project. `seed:images` only writes Firestore and may be run against a real Spark project; it skips products that already have an image (`node --env-file=.env scripts/seed-images.js --all` re-assigns). Images are static files served by the web app, stored in Firestore as `/images/products/<file>.jpg` paths (see [FIREBASE_SETUP.md §4](FIREBASE_SETUP.md)); **they are for demo products only: future ESP32 uploads will need a suitable cloud storage solution.** A product without any image shows a "Photo coming soon" placeholder.
 
 ## 2. What the storefront does
 
@@ -61,7 +61,7 @@ All three refuse to run against a real Firebase project. The illustrations are c
 * **Search is in-memory over the newest 300 listings** (audit P5-1) because Firestore cannot rank text. Everything else is an indexed query.
 * **Customer address list is embedded in `customers/{uid}`** (max 5) and updated in a transaction.
 * **Cart in localStorage, not Firestore.** It holds no prices, so a tampered cart can only change quantities, which the server re-validates at checkout. A signed-in cart is therefore per browser, not per account.
-* **No Firestore/Storage client SDK in the browser** (unchanged): the web app only uses Firebase Auth; images are public `public/products/**` URLs.
+* **No Firestore/Storage client SDK in the browser** (unchanged): the web app only uses Firebase Auth; demo images are static `/images/products/**` files served by the web app (no Storage).
 
 ## 4. Tests
 

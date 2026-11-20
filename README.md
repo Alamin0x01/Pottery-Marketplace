@@ -11,7 +11,7 @@ Requirements: [docs/cloudcamp.pdf](docs/cloudcamp.pdf) · Design and roadmap: [d
 `firmware/` (ESP32-S3) and `tools/device-simulator/` are created in the phases that need them.
 
 ## Prerequisites
-Node.js 20.6+ (developed on Node 24) and npm. For the Firebase emulators (local database): **Java 21+** (`winget install EclipseAdoptium.Temurin.21.JDK`, then a new terminal). `npm run emulators` tells you plainly if Java is missing; without the emulators the admin login cannot work locally. To use a real Firebase project instead, follow [docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md).
+Node.js 22+ (developed on Node 24) and npm. For the Firebase emulators (local database): **Java 21+** (`winget install EclipseAdoptium.Temurin.21.JDK`, then a new terminal). `npm run emulators` tells you plainly if Java is missing; without the emulators the admin login cannot work locally. To use a real Firebase project instead, follow [docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md).
 
 ## Run locally
 ```powershell
@@ -39,6 +39,15 @@ Copy-Item .env.example .env.local
 npm run dev                      # http://localhost:5174
 ```
 The customer site shows **API: online** (backend reachable, CORS OK) and **Firebase: configured** (web Firebase settings valid). The backend refuses to start with an invalid Firebase configuration and says why.
+
+### Product images (Spark plan, demo only)
+Demo product images are static files in `web/public/images/products/` (paths like `/images/products/clay-vase.jpg` stored in Firestore `products.images[]`). No Cloud Storage, no Blaze plan, no paid image host. Run `cd backend; npm run seed:images` after seeding to assign them. These are for demo products only; future ESP32 image uploads will require a suitable cloud storage solution. Details: [docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md) §4.
+
+### Deployment
+Railway (backend) + two Vercel projects (web, admin) on the Firebase Spark plan: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
+### Judge demo accounts
+Fixed **DEMO** accounts (superadmin, admin, customer, plus a DEMO potter record), a "Demo login" panel and a confidential credentials sheet are described in [docs/DEMO_ACCOUNTS.md](docs/DEMO_ACCOUNTS.md). Passwords are never committed.
 
 ### Admin dashboard (Phase 3)
 The admin app needs `VITE_FIREBASE_*` in `admin/.env.local` (for the emulators, `admin/.env.example` explains placeholder values) and an administrator account. Admins are created **only** by the trusted operator script — there is no sign-up and no API that grants a role:

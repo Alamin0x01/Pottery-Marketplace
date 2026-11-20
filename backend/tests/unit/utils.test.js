@@ -5,6 +5,9 @@ import { normalizeBdPhone } from '../../src/utils/phone.js';
 import { buildSearchTokens } from '../../src/utils/search.js';
 import { pickDeliveryDevice } from '../../src/repositories/devices.repository.js';
 import { encodeCursor, decodeCursor, normalizeLimit } from '../../src/repositories/query.js';
+import fs from 'node:fs';
+import { createPublicImageUrl } from '../../src/utils/publicUrl.js';
+import { STATIC_IMAGES, createImagePicker, staticImageEntries } from '../../scripts/lib/staticImages.js';
 
 test('ID formats match the design and the patterns', () => {
   assert.equal(formatPotterId(1001), 'POT-1001');
@@ -59,4 +62,27 @@ test('cursor round-trip and limit validation', () => {
   assert.equal(normalizeLimit(undefined), 20);
   assert.throws(() => normalizeLimit(0), /between 1 and 100/);
   assert.throws(() => normalizeLimit(101), /between 1 and 100/);
+});
+
+test('static demo images are served as site-relative paths; private and unsafe paths never resolve', () => {
+  const url = createPublicImageUrl({});
+  assert.equal(url('/images/products/clay-vase.jpg'), '/images/products/clay-vase.jpg');
+  for (const bad of ['/images/products/../secret.jpg', '/images/products/a/b.jpg', '/images/other/x.jpg', '/images/products/x.svg', '//evil.example/x.jpg', 'uploads/POT-1/p1/original.jpg', null, undefined]) {
+    assert.equal(url(bad), null, String(bad));
+  }
+  // Cloud Storage URLs only exist when a bucket is configured (never on the Spark plan).
+  assert.equal(url('public/products/p1/web.jpg'), null);
+  assert.match(createPublicImageUrl({ bucket: 'b' })('public/products/p1/web.jpg'), /\/o\/public%2Fproducts%2Fp1%2Fweb\.jpg\?alt=media$/);
+});
+
+test('every static demo image exists in web/public and seeding produces valid image entries', () => {
+  const dir = new URL('../../../web/public/images/products/', import.meta.url);
+  for (const slug of Object.keys(STATIC_IMAGES)) assert.ok(fs.existsSync(new URL(`${slug}.jpg`, dir)), `${slug}.jpg is missing`);
+  assert.equal(Object.keys(STATIC_IMAGES).length, 10);
+  const pick = createImagePicker();
+  const names = ['Earthen Tea Cups, Set of 4', 'Serving Bowl, Handmade', 'Storage Jar, Small', 'Glazed Terracotta Vase', 'Something else'];
+  const url = createPublicImageUrl({});
+  for (const name of names) {
+    for (const entry of staticImageEntries(pick(name))) assert.ok(['web', 'thumb'].includes(entry.kind) && url(entry.path) === entry.path);
+  }
 });

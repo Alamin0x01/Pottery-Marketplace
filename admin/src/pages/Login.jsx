@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { Icon } from '../components/ui/Icon.jsx';
+import { DemoLogin } from '../components/auth/DemoLogin.jsx';
 import { Spinner } from '../components/ui/States.jsx';
 import { getFirebaseRuntime } from '../lib/firebase.js';
 import { useReachable } from '../hooks/useReachable.js';
@@ -114,6 +115,8 @@ export function LoginPage() {
             {busy ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
+
+        <DemoLogin onSelect={(address) => { setEmail(address); setPassword(''); setFormError(null); }} />
 
         <p className="mt-4 text-center text-xs text-charcoal-soft">
           Administrator accounts are created by the platform operator. There is no public sign-up.

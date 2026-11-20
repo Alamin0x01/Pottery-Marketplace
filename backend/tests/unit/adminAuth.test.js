@@ -39,7 +39,7 @@ test('authenticateUser: verifies with checkRevoked and takes the role only from 
   });
   assert.equal(err, undefined);
   assert.equal(seenRevoked, true);
-  assert.deepEqual(req.user, { uid: 'u1', email: 'a@example.com', role: 'admin' });
+  assert.deepEqual(req.user, { uid: 'u1', email: 'a@example.com', role: 'admin', demo: false });
 });
 
 test('authenticateUser: unknown or invalid role claims become null (no privileges)', async () => {

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { ADMIN_ROLES } from '../../db/enums.js';
 import { authenticateUser } from '../../middleware/authUser.js';
 import { requireRole } from '../../middleware/requireRole.js';
+import { denyDemo } from '../../middleware/denyDemo.js';
 import { validate } from '../../middleware/validate.js';
 import { adminFailureLimiter, adminLimiter } from '../../middleware/rateLimit.js';
 import { createAdminController } from '../../controllers/admin.controller.js';
@@ -65,7 +66,7 @@ export function createAdminRouter({ auth, repos, logger, config }) {
   router.get('/potters', validate({ query: pottersQuery }), m.listPotters);
   router.get('/potters/:id', validate({ params: potterParams, query: noQuery }), m.getPotter);
   router.patch('/potters/:id', validate({ params: potterParams, query: noQuery, body: potterPatchBody }), m.updatePotter);
-  router.patch('/potters/:id/status', validate({ params: potterParams, query: noQuery, body: potterStatusBody }), m.setPotterStatus);
+  router.patch('/potters/:id/status', denyDemo, validate({ params: potterParams, query: noQuery, body: potterStatusBody }), m.setPotterStatus);
 
   router.post('/devices', validate({ query: noQuery, body: deviceRegisterBody }), m.registerDevice);
   router.get('/devices', validate({ query: devicesQuery }), m.listDevices);
@@ -73,9 +74,9 @@ export function createAdminRouter({ auth, repos, logger, config }) {
   router.get('/devices/:id', validate({ params: deviceParams, query: noQuery }), m.getDevice);
   router.get('/devices/:id/events', validate({ params: deviceParams, query: listQuery }), m.deviceEvents);
   router.get('/devices/:id/audit', validate({ params: deviceParams, query: listQuery }), m.deviceAudit);
-  router.patch('/devices/:id/status', validate({ params: deviceParams, query: noQuery, body: deviceStatusBody }), m.setDeviceStatus);
-  router.post('/devices/:id/revoke', validate({ params: deviceParams, query: noQuery, body: deviceRevokeBody }), m.revokeDevice);
-  router.post('/devices/:id/credentials', validate({ params: deviceParams, query: noQuery, body: emptyBody }), m.issueCredentials);
+  router.patch('/devices/:id/status', denyDemo, validate({ params: deviceParams, query: noQuery, body: deviceStatusBody }), m.setDeviceStatus);
+  router.post('/devices/:id/revoke', denyDemo, validate({ params: deviceParams, query: noQuery, body: deviceRevokeBody }), m.revokeDevice);
+  router.post('/devices/:id/credentials', denyDemo, validate({ params: deviceParams, query: noQuery, body: emptyBody }), m.issueCredentials);
 
   return router;
 }

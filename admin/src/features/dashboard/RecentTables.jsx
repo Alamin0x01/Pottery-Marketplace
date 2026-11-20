@@ -4,6 +4,7 @@ import { DataTable } from '../../components/ui/DataTable.jsx';
 import { StatusBadge } from '../../components/ui/StatusBadge.jsx';
 import { EmptyState, ErrorState, Skeleton } from '../../components/ui/States.jsx';
 import { Icon } from '../../components/ui/Icon.jsx';
+import { ProductThumb } from '../../components/ui/ProductThumb.jsx';
 import { ORDER_STATUS_META, PRODUCT_STATUS_META } from '../../utils/constants.js';
 import { formatBdt, formatRelative } from '../../utils/format.js';
 
@@ -57,12 +58,15 @@ export function RecentProducts({ state }) {
       ) : (
         <ul className="divide-y divide-line">
           {data.items.map((p) => (
-            <li key={p.id} className="flex items-start justify-between gap-3 px-5 py-3">
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-charcoal">{p.name ?? 'Untitled draft'}</p>
-                <p className="truncate text-xs text-charcoal-soft">
-                  {p.potterName} · {p.price ? formatBdt(p.price) : 'No price yet'} · {formatRelative(p.createdAt)}
-                </p>
+            <li key={p.id} className="flex items-center justify-between gap-3 px-5 py-3">
+              <div className="flex min-w-0 items-center gap-3">
+                <ProductThumb product={p} />
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-charcoal">{p.name ?? 'Untitled draft'}</p>
+                  <p className="truncate text-xs text-charcoal-soft">
+                    {p.potterName} · {p.price ? formatBdt(p.price) : 'No price yet'} · {formatRelative(p.createdAt)}
+                  </p>
+                </div>
               </div>
               <StatusBadge value={p.status} meta={PRODUCT_STATUS_META} />
             </li>

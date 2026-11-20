@@ -14,12 +14,12 @@ try {
 
 const { projectId, storageBucket, useEmulators } = firebase.config;
 console.log(`Project: ${projectId}`);
-console.log(`Bucket:  ${storageBucket}`);
+console.log(`Bucket:  ${storageBucket ?? '(none: Cloud Storage not used)'}`);
 console.log(`Mode:    ${useEmulators ? 'EMULATORS (no real data touched)' : 'REAL Firebase project'}`);
 
 const result = await checkFirebase(firebase);
 for (const [name, check] of Object.entries(result.checks)) {
-  console.log(`${check.ok ? '✔' : '✖'} ${name.padEnd(9)} ${check.ok ? `${check.ms} ms` : check.error}`);
+  console.log(`${check.ok ? '✔' : '✖'} ${name.padEnd(9)} ${check.skipped ? 'skipped (no bucket configured)' : check.ok ? `${check.ms} ms` : check.error}`);
 }
 await firebase.close();
 process.exit(result.ok ? 0 : 1);

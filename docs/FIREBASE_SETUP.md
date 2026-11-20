@@ -19,16 +19,22 @@ Related: [DATABASE_IMPLEMENTATION.md](DATABASE_IMPLEMENTATION.md) · [SYSTEM_ARC
 ## 2. Create the Firebase project
 1. Open <https://console.firebase.google.com> → **Add project**.
 2. Name it (e.g. `pottery-marketplace-dev`). Note the generated **Project ID** (e.g. `pottery-marketplace-dev-a1b2c`); you need it below. Google Analytics is optional (not used by this app).
-3. **Upgrade to the Blaze (pay-as-you-go) plan** if the console requires it for Cloud Storage **[verify in the console — requirements change]**, and immediately create a **budget alert** (Google Cloud console → Billing → Budgets & alerts) so a bug or abuse cannot produce a surprise bill.
+3. Stay on the free **Spark** plan. Do **not** upgrade to Blaze: this project does not use Cloud Storage (see "Product images" below), and Firestore + Authentication are available on Spark.
 
 ## 3. Create Cloud Firestore
 1. **Build → Firestore Database → Create database**.
 2. Edition **Standard**; location **`asia-south1` (Mumbai)** — *the location cannot be changed later* (decision recorded in PROJECT_ANALYSIS.md).
 3. Start in **production mode**. (You will deploy this repo's deny-all rules in §7; the backend uses the Admin SDK, which bypasses rules.)
 
-## 4. Enable Cloud Storage
-1. **Build → Storage → Get started**, production mode, same location (`asia-south1`).
-2. Copy the **bucket name** shown at the top of the Files tab (without `gs://`). New projects look like `<project-id>.firebasestorage.app`; older ones `<project-id>.appspot.com`. Use exactly what you see.
+## 4. Product images (no Cloud Storage)
+Cloud Storage is **not** enabled and no paid image host (Cloudinary etc.) is used. Demo product images are static files committed to the web app:
+
+* Files: `web/public/images/products/*.jpg` (10 demo images), served by Vite at `/images/products/<file>.jpg`. The admin app serves/bundles the same folder (see `admin/vite.config.js`), so there is one copy.
+* Firestore: each product's `images[]` holds `{ path: "/images/products/clay-vase.jpg", kind: "web" | "thumb", w, h }` next to any private `original` entry. The backend returns `imageUrl` / `thumbUrl` as that same site-relative path (`backend/src/utils/publicUrl.js` only accepts `/images/products/<file>` with an image extension).
+* Assign images to approved products with `cd backend; npm run seed:images` (Firestore only; products that already have a web/thumb image are skipped, add `--all` to re-assign: `node --env-file=.env scripts/seed-images.js --all`). Existing product and order records are not modified otherwise (orders keep their own `productImagePath`).
+* Leave `FIREBASE_STORAGE_BUCKET` **empty** in `backend/.env`; the backend then skips Storage entirely (readiness shows `storage: skipped`).
+
+> **Demo only.** Static images are for demo products. Future ESP32 device photo uploads cannot use this approach (files must be added at build time) and will require a suitable cloud storage solution, chosen when that phase starts.
 
 ## 5. Enable Authentication
 1. **Build → Authentication → Get started**.
@@ -86,7 +92,7 @@ FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199
 `backend/.env` (copy from `backend/.env.example`):
 ```
 FIREBASE_PROJECT_ID=<your project id>
-FIREBASE_STORAGE_BUCKET=<your bucket name>
+FIREBASE_STORAGE_BUCKET=                                # leave empty: Cloud Storage is not used (see §4)
 GOOGLE_APPLICATION_CREDENTIALS=C:\secure\key.json     # or FIREBASE_SERVICE_ACCOUNT_B64=...
 ```
 Remove/comment the three emulator variables. The service-account key's `project_id` must equal `FIREBASE_PROJECT_ID`.

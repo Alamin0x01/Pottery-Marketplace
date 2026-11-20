@@ -46,6 +46,8 @@ export function authenticateUser({ auth, logger, checkRevoked = true }) {
         uid: decoded.uid,
         email: decoded.email ?? null,
         role: ADMIN_ROLES.includes(decoded.role) ? decoded.role : null,
+        // Marks the fixed judge-demo accounts (custom claim written only by the demo seed script).
+        demo: decoded.demo === true,
       };
       next();
     } catch (err) {

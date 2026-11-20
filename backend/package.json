@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=20.6"
+    "node": ">=22"
   },
   "scripts": {
     "dev": "node --watch --env-file-if-exists=.env src/server.js",
@@ -16,6 +16,7 @@
     "admin": "node --env-file-if-exists=.env scripts/manage-admin.js",
     "seed:demo": "node --env-file-if-exists=.env scripts/seed-demo.js",
     "seed:images": "node --env-file-if-exists=.env scripts/seed-images.js",
+    "demo:accounts": "node --env-file-if-exists=.env --env-file-if-exists=.env.demo scripts/seed-demo-accounts.js",
     "backfill:potters": "node --env-file-if-exists=.env scripts/backfill-potters.js",
     "indexes:generate": "node scripts/generate-indexes.js",
     "firebase:deploy:rules": "firebase deploy --config firebase/firebase.json --only firestore:rules,firestore:indexes,storage"

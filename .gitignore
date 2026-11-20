@@ -9,6 +9,9 @@ dist/
 .env.*
 !.env.example
 
+# Judge demo credentials sheet (contains passwords): share directly, never commit
+judge-credentials/
+
 # Firebase / Google Cloud credentials and private keys - NEVER commit
 serviceAccount*.json
 *serviceaccount*.json
