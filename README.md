@@ -1,6 +1,48 @@
 # AI-Powered Pottery Marketplace with IoT Integration
 
+Mati is a handmade-pottery marketplace for Bangladesh: a customer storefront, an admin dashboard and a REST API, on Firebase (Authentication + Firestore) and Vercel, with a planned ESP32-S3 device for potters.
+
+**Demo video:** [Watch on YouTube](https://www.youtube.com/watch?v=BntG-A9cGMc)
+
 Requirements: [docs/cloudcamp.pdf](docs/cloudcamp.pdf) · Design and roadmap: [docs/README.md](docs/README.md) (analysis, architecture, database, API, roadmap)
+
+## Features
+
+**Built**
+* **Customer marketplace** (`web/`): browse and filter products and categories, product details, featured potters, cart, checkout with Bangladesh districts, order confirmation, order tracking, sign-in, profile, saved addresses and order history.
+* **Admin dashboard** (`admin/`): role-based sign-in (`admin`, `superadmin`), overview and activity, orders and products lists, search, admin list (superadmin only).
+* **Potter and device management**: register potters, register and assign devices, issue and revoke device credentials, device events and audit trail.
+* **Device API**: authenticated heartbeat endpoint for devices.
+* **Security**: Zod-validated input on every route, Firebase ID-token checks, role checks, rate limits, CORS allow-list, Helmet, deny-all Firestore rules.
+* **Demo mode**: fixed demo accounts and a demo login panel for judges (development only, see [docs/DEMO_ACCOUNTS.md](docs/DEMO_ACCOUNTS.md)).
+
+**Planned, not built yet**
+* Photo upload from the potter's device, AI draft listings with Gemini ([specs/001-gemini-listing](specs/001-gemini-listing/spec.md)), RAG, ESP32-S3 firmware, notifications, and a cloud-storage decision for real product photos. Product images today are static demo files.
+
+## What is used
+
+| Layer | Technology |
+|-------|------------|
+| Customer site and admin | React, React Router, Vite, Tailwind CSS, Axios |
+| API | Node.js, Express, Zod, Helmet, express-rate-limit, Pino |
+| Auth and database | Firebase Authentication, Cloud Firestore (Firebase Admin SDK on the server) |
+| Local development | Firebase emulators (Firestore, Auth) |
+| Hosting | Vercel Hobby (three projects) on the Firebase Spark plan, free tier only |
+| Testing | Node test runner (backend, web, admin), Firebase rules unit testing |
+| Planned | ESP32-S3 firmware, Gemini API |
+
+## Workflow
+
+1. **Admin setup:** an operator creates admin accounts with a trusted script (there is no public sign-up for admins).
+2. **Onboarding:** an admin registers a potter, then registers a device and assigns it to that potter. Credentials are issued once and can be revoked.
+3. **Listing:** products are stored in Firestore. Today they are seeded demo data; device photo upload and AI-drafted listings are planned.
+4. **Shopping:** a customer browses, adds to cart, checks out and gets an order confirmation. Orders can be tracked and appear in the account history.
+5. **Fulfilment:** admins see orders, products and device activity in the dashboard.
+6. **Development flow:** audit, plan, approve, implement, verify, as described in [AGENTS.md](AGENTS.md).
+
+Both clients call the Express API, which verifies the Firebase token and role, validates input and talks to Firestore. The browser never reads Firestore directly.
+
+## Project layout
 
 | Folder | Purpose | Dev port |
 |--------|---------|----------|
@@ -76,4 +118,3 @@ cd admin;   npm test; npm run build  # 7 tests
 * *`VITE_API_URL is not set`*: create `.env.local` from `.env.example`, restart `npm run dev`.
 * *Port already in use*: the Vite ports are fixed (`strictPort`) so CORS settings stay predictable; stop the process using the port.
 * *Backend exits with "Invalid environment configuration"*: the message names the offending variable.
-# Pottery-Marketplace
