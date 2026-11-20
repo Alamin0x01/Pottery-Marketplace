@@ -9,3 +9,5 @@ dist/
 *-firebase-adminsdk-*.json
 *.pem
 *.key
+
+.vercel

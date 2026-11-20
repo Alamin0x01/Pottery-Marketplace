@@ -15,3 +15,5 @@ service-account*.json
 .firebaserc
 .firebase/
 *-debug.log*
+.vercel
+.env*

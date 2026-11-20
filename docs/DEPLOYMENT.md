@@ -8,11 +8,16 @@ Firebase stays on the **Spark (free) plan** with **Authentication and Firestore 
 | `mati-marketplace` | `web` | Customer site (Vite) | `web/vercel.json` |
 | `mati-admin` | `admin` | Admin dashboard (Vite) | `admin/vercel.json` |
 
-All three build from the same GitHub repo (`main`). Node 22 (`engines`). If a project name is taken, Vercel assigns a different URL: always use the URLs Vercel reports.
+All three come from the same GitHub repo (`main`). Node: API `24.x`, web/admin `22.x` (`engines`). If a project name is taken, Vercel assigns a different URL: always use the URLs Vercel reports.
+
+**Current production URLs:** API `https://mati-api-zeta.vercel.app`, customer site `https://mati-marketplace.vercel.app`, admin `https://mati-admin-mu.vercel.app`.
+
+**Deployed with the Vercel CLI**, because the Vercel GitHub app could not see this repo, so Git auto-deploys are not connected yet. To connect them: GitHub > Settings > Applications > Vercel > add the repository, then in each project > Settings > Git, with Root Directories `backend`, `web`, `admin`. Manual redeploy: `vercel deploy --prod` from `backend/`, `web/` or `admin/` (each has an ignored `.vercel/project.json` link). A CLI deploy of `admin/` uploads only that folder, so copy the shared images to `admin/public/images/products` for that deploy and remove them afterwards (Git-based deploys read them from `../web`).
 
 ## 1. How the API runs on Vercel
 * `backend/api/index.js` exports the Express app as the function handler (`src/vercel.js`). The app is created lazily once per warm instance (Firebase Admin initialises on the first request and is then reused). `src/bootstrap.js` is shared with the local server (`src/server.js`), so both run the same app.
 * `backend/vercel.json` rewrites `/(.*)` to `/api`, so every existing URL (`/health`, `/health/ready`, `/api/...`) is unchanged. Region `bom1` (Mumbai) is next to Firestore `asia-south1`. `npm ci --omit=dev` skips the large dev-only `firebase-tools`.
+* **Node 24 + `jose` override.** `firebase-admin` pulls `jwks-rsa`, which `require()`s the ESM-only `jose` 6; Vercel's function loader rejects that (`ERR_REQUIRE_ESM`). `backend/package.json` therefore overrides `jwks-rsa`'s `jose` to `^5.10.0` (CommonJS-compatible; the few functions `jwks-rsa` uses exist in both). Re-check this if `firebase-admin` is upgraded.
 * Invalid configuration returns `503 SERVICE_UNAVAILABLE` (details in the function logs, never in the response) and the next request retries.
 
 ### Limitations on Vercel (and what to do)
